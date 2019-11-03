@@ -14,3 +14,11 @@
 
 ## GIF
 ![animation](https://user-images.githubusercontent.com/33639948/68090254-87db2380-fe82-11e9-9273-bec3ebe97278.gif)
+
+
+## Changes
+- Editor mode added
+-- With left click adds new living cell and right click kills living cells
+-- F4 kill all cells
+-- F3 random 1500 cells spawns
+-- F1 play, F2 pause
