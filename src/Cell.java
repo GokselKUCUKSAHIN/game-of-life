@@ -7,18 +7,18 @@ import java.util.ArrayList;
 public class Cell
 {
 
-    //Coorinates
+    // Coorinates
     private int x = -1;
     private int y = -1;
 
+    // State
     private boolean alive = false;
 
-    //BODY
+    // BODY
     Rectangle body;
 
     public static Cell grid[][] = new Cell[Main.cols][Main.rows];
     public static ArrayList<Cell> cells = new ArrayList<>();
-
 
     public Cell(int x, int y)
     {
@@ -40,26 +40,19 @@ public class Cell
         body.setStrokeWidth(1);
     }
 
-
     public int countNeighbours()
     {
         int neighborCount = 0;
-        if (x < Main.cols - 1)
+
+        if (x > 0 && y < Main.rows - 1)
         {
-            // right
-            if (grid[x + 1][y].isAlive())
+            // upper left
+            if (grid[x - 1][y + 1].isAlive())
             {
                 neighborCount++;
             }
         }
-        if (x > 0)
-        {
-            // left
-            if (grid[x - 1][y].isAlive())
-            {
-                neighborCount++;
-            }
-        }
+        //
         if (y < Main.rows - 1)
         {
             // up
@@ -68,10 +61,29 @@ public class Cell
                 neighborCount++;
             }
         }
-        if (y > 0)
+        //
+        if (x < Main.cols - 1 && y < Main.rows - 1)
         {
-            // down
-            if (grid[x][y - 1].isAlive())
+            // upper right
+            if (grid[x + 1][y + 1].isAlive())
+            {
+                neighborCount++;
+            }
+        }
+        //
+        if (x > 0)
+        {
+            // left
+            if (grid[x - 1][y].isAlive())
+            {
+                neighborCount++;
+            }
+        }
+        //
+        if (x < Main.cols - 1)
+        {
+            // right
+            if (grid[x + 1][y].isAlive())
             {
                 neighborCount++;
             }
@@ -85,26 +97,20 @@ public class Cell
                 neighborCount++;
             }
         }
+        //
+        if (y > 0)
+        {
+            // down
+            if (grid[x][y - 1].isAlive())
+            {
+                neighborCount++;
+            }
+        }
+        //
         if (x < Main.cols - 1 && y > 0)
         {
             // down right
             if (grid[x + 1][y - 1].isAlive())
-            {
-                neighborCount++;
-            }
-        }
-        if (x > 0 && y < Main.rows - 1)
-        {
-            // upper left
-            if (grid[x - 1][y + 1].isAlive())
-            {
-                neighborCount++;
-            }
-        }
-        if (x < Main.cols - 1 && y < Main.rows - 1)
-        {
-            // upper right
-            if (grid[x + 1][y + 1].isAlive())
             {
                 neighborCount++;
             }
@@ -142,12 +148,41 @@ public class Cell
         }
     }
 
-    public void printNeighbours()
+    public static void update()
     {
-        int count = countNeighbours();
-        if (count != 0)
+        int neighbours = 0;
+        boolean[] bitString = new boolean[cells.size()];
+        for (int i = 0; i < cells.size(); i++)
         {
-            System.out.printf("x: %2d, y: %2d = %d\n", x, y, count);
+            Cell cell = cells.get(i);
+            neighbours = cell.countNeighbours(); //count neighbours
+            bitString[i] = false; //reset all next-gen
+            // Rule Number 1
+            // if cell dead and has 3 neighbours then live
+            if (!cell.isAlive() && neighbours == 3)
+            {
+                bitString[i] = true;
+            }
+            // Rule Number 2
+            // if cell lives and has less than 2 or greater than 3 neighbours then die
+            else if (cell.isAlive() && (neighbours < 2 || neighbours > 3))
+            {
+                bitString[i] = false;
+            } else
+            {
+                bitString[i] = cell.isAlive();
+            }
+        }
+
+        for (int i = 0; i < bitString.length; i++)
+        {
+            if (bitString[i])
+            {
+                cells.get(i).live();
+            } else
+            {
+                cells.get(i).die();
+            }
         }
     }
 }

@@ -22,8 +22,8 @@ public class Main extends Application
     public static final int width = 1200;
     public static final int height = 800;
 
-    public static int cols = 60;
-    public static int rows = 40;
+    public static int cols = 120;
+    public static int rows = 80;
 
     public static int w = width / cols;
     public static int h = height / rows;
@@ -48,7 +48,7 @@ public class Main extends Application
                 child.add(cell.getNode());
             }
         }
-        for (int i = 0; i < 500; i++)
+        for (int i = 0; i < 1500; i++)
         {
             int x = Utils.getRandomInt(cols);
             int y = Utils.getRandomInt(rows);
@@ -56,55 +56,39 @@ public class Main extends Application
             Cell.grid[x][y].live();
         }
 
-        for(Cell cell : Cell.cells)
-        {
-            cell.printNeighbours();
-        }
-        /*
-        for (int i = 0; i < height / size; i++)
-        {
-            for (int j = 0; j < width / size; j++)
-            {
-                Rectangle rect = new Rectangle(j * size, i * size, size, size);
-                rect.setFill(Color.SNOW);
-                rect.setStrokeWidth(1);
-                rect.setStroke(Color.GRAY);
-                rectangles.add(rect);
-            }
-        }
-        for (Rectangle rectangle : rectangles)
-        {
-            child.addAll(rectangle);
-        }
-        */
-        //
         root.setOnKeyPressed(e -> {
             switch (e.getCode())
             {
                 case F1:
                 {
-                    //PLAY
+                    // PLAY
                     update.play();
                     break;
                 }
                 case F2:
                 {
-                    //PAUSE
+                    // PAUSE
                     update.pause();
                     break;
                 }
                 case F3:
                 {
-                    //Show Child Count
-                    System.out.println("Child Count: " + child.size());
+                    // RESET
+                    update.pause();
+                    for (Cell cell :Cell.cells)
+                    {
+                        cell.die();
+                    }
+                    for (int i = 0; i < 1500; i++)
+                    {
+                        Cell.cells.get(Utils.getRandomInt(Cell.cells.size())).live();
+                    }
                     break;
                 }
             }
         });
-        update = new Timeline(new KeyFrame(Duration.millis(16), e -> {
-            //60 fps
-            //System.out.println("loop test");
-
+        update = new Timeline(new KeyFrame(Duration.millis(30), e -> {
+            Cell.update();
         }));
         update.setCycleCount(Timeline.INDEFINITE);
         update.setRate(1);
