@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -28,6 +29,8 @@ public class Main extends Application
     public static int w = width / cols;
     public static int h = height / rows;
 
+    public boolean paused = true;
+
     private static Color backcolor = Color.rgb(51, 51, 51);
 
     ArrayList<Rectangle> rectangles = new ArrayList<>();
@@ -44,7 +47,7 @@ public class Main extends Application
         {
             for (int i = 0; i < cols; i++)
             {
-                Cell cell = new Cell(i,j);
+                Cell cell = new Cell(i, j);
                 child.add(cell.getNode());
             }
         }
@@ -55,7 +58,9 @@ public class Main extends Application
             //
             Cell.grid[x][y].live();
         }
-
+        //
+        root.setOnDragDetected(e -> root.startFullDrag());
+        //
         root.setOnKeyPressed(e -> {
             switch (e.getCode())
             {
@@ -63,19 +68,21 @@ public class Main extends Application
                 {
                     // PLAY
                     update.play();
+                    paused = false;
                     break;
                 }
                 case F2:
                 {
                     // PAUSE
                     update.pause();
+                    paused = true;
                     break;
                 }
                 case F3:
                 {
                     // RESET
                     update.pause();
-                    for (Cell cell :Cell.cells)
+                    for (Cell cell : Cell.cells)
                     {
                         cell.die();
                     }
@@ -85,8 +92,56 @@ public class Main extends Application
                     }
                     break;
                 }
+                case F4:
+                {
+                    for(Cell cell: Cell.cells)
+                    {
+                        cell.die();
+                    }
+                    break;
+                }
             }
         });
+        //
+        for (Cell cell : Cell.cells)
+        {
+            cell.getNode().setOnMouseDragEntered(e -> {
+                if (paused)
+                {
+                    if (e.getButton() == MouseButton.PRIMARY)
+                    {
+                        cell.live();
+                    } else if(e.getButton() == MouseButton.SECONDARY)
+                    {
+                        cell.die();
+                    }
+                }
+                else
+                {
+                    paused = true;
+                    update.pause();
+                }
+            });
+
+            cell.getNode().setOnMouseClicked(e->{
+                if (paused)
+                {
+                    if (e.getButton() == MouseButton.PRIMARY)
+                    {
+                        cell.live();
+                    } else if(e.getButton() == MouseButton.SECONDARY)
+                    {
+                        cell.die();
+                    }
+                }
+                else
+                {
+                    paused = true;
+                    update.pause();
+                }
+            });
+        }
+        //
         update = new Timeline(new KeyFrame(Duration.millis(30), e -> {
             Cell.update();
         }));
